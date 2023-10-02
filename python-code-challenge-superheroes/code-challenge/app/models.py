@@ -4,6 +4,7 @@ from sqlalchemy.orm import validates
 
 db = SQLAlchemy()
 
+
 class Hero(db.Model, SerializerMixin):
     __tablename__ = 'heroes'
 
@@ -21,6 +22,7 @@ class Hero(db.Model, SerializerMixin):
     def __repr__(self):
         return f"Hero('{self.name}')"
 
+
 class Power(db.Model, SerializerMixin):
     __tablename__ = "powers"
     serialize_rules = ('-hero_powers.power',)
@@ -31,25 +33,29 @@ class Power(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-
     @validates("description")
     def validate_description(self, key, description):
-        assert len(description) >= 20, "Description must be at least 20 characters long"
+        assert len(
+            description) >= 20, "Description must be at least 20 characters long"
         return description
+
 
 class HeroPower(db.Model, SerializerMixin):
     __tablename__ = "hero_powers"
 
     id = db.Column(db.Integer, primary_key=True)
     strength = db.Column(db.String(20), nullable=False)
-    power_id = db.Column(db.Integer, db.ForeignKey("powers.id"), nullable=False)
+    power_id = db.Column(db.Integer, db.ForeignKey(
+        "powers.id"), nullable=False)
     hero_id = db.Column(db.Integer, db.ForeignKey("heroes.id"), nullable=False)
+
+    power = db.relationship("Power", backref="hero_powers")
 
     @validates("strength")
     def validate_strength(self, key, strength):
-        assert strength in ["Strong", "Weak", "Average"], "Invalid strength value"
-        return strength 
+        assert strength in ["Strong", "Weak",
+                            "Average"], "Invalid strength value"
+        return strength
 
     def __repr__(self):
         return f"HeroPower(hero_id={self.hero_id}, power_id={self.power_id}, strength={self.strength})"
-            
