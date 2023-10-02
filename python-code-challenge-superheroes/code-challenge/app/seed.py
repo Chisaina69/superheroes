@@ -49,3 +49,8 @@ with app.app_context():
     db.session.commit()
 
 print("🦸‍♀️ Done seeding!")
+
+
+
+
+    
